@@ -57,4 +57,4 @@ Library
     time                   == 1.4.*,
     text                   == 0.11.*,
     web-routes             == 0.27.*,
-    web-routes-th          == 0.21.*
+    web-routes-th          >= 0.21
