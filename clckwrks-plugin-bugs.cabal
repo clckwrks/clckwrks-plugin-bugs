@@ -34,7 +34,7 @@ Library
 
   Build-depends:
     base                     < 5,
-    acid-state             == 0.7.*,
+    acid-state             >= 0.7,
     attoparsec             == 0.10.*,
     blaze-html             == 0.5.*,
     clckwrks               == 0.12.*,
