@@ -1,5 +1,5 @@
 Name:                clckwrks-plugin-bugs
-Version:             0.2.7
+Version:             0.2.8
 Synopsis:            bug tracking plugin for clckwrks
 Homepage:            http://clckwrks.com/
 License:             BSD3
@@ -38,8 +38,8 @@ Library
     attoparsec             == 0.10.*,
     blaze-html             == 0.5.*,
     clckwrks               == 0.12.*,
-    containers             == 0.4.*,
-    directory              == 1.1.*,
+    containers             >= 0.4 && < 0.6,
+    directory              >= 1.1 && < 1.3,
     filepath               >= 1.2 && < 1.4,
     gd                     == 3000.*,
     happstack-authenticate == 0.9.*,
