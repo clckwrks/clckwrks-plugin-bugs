@@ -1,5 +1,5 @@
 Name:                clckwrks-plugin-bugs
-Version:             0.2.8
+Version:             0.2.9
 Synopsis:            bug tracking plugin for clckwrks
 Homepage:            http://clckwrks.com/
 License:             BSD3
@@ -43,7 +43,7 @@ Library
     filepath               >= 1.2 && < 1.4,
     gd                     == 3000.*,
     happstack-authenticate == 0.9.*,
-    happstack-server       == 7.0.*,
+    happstack-server       >= 7.0 && < 7.2,
     happstack-hsp          == 7.1.*,
     hsp                    == 0.7.*,
     ixset                  == 1.0.*,
