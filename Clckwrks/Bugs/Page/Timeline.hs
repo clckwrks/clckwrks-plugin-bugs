@@ -10,11 +10,12 @@ import Clckwrks.Bugs.URL
 import Clckwrks.Bugs.Page.Template (template)
 import qualified Data.IxSet as IxSet
 import Data.List (find)
+import Data.String (fromString)
 import Numeric (showFFloat)
 
 timeline :: BugsM Response
 timeline =
-    template "Timeline" ()
+    template (fromString "Timeline") ()
         <%>
           <h1>Timeline</h1>
           <% timelineWidget %>

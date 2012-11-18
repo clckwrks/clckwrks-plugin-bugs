@@ -1,12 +1,14 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE DeriveDataTypeable, TemplateHaskell #-}
 module Clckwrks.Bugs.URL where
 
 import Clckwrks.Bugs.Types (BugId(..))
-import Web.Routes.TH (derivePathInfo)
+import Data.Data           (Data, Typeable)
+import Web.Routes.TH       (derivePathInfo)
 
 data BugsAdminURL
     = EditBug BugId
     | EditMilestones
+      deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(derivePathInfo ''BugsAdminURL)
 
 data BugsURL
@@ -16,4 +18,5 @@ data BugsURL
     | BugsAdmin BugsAdminURL
     | BugsData FilePath
     | Timeline
+      deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(derivePathInfo ''BugsURL)

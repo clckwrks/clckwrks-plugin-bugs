@@ -13,6 +13,7 @@ import Clckwrks.Bugs.Page.Template (template)
 import Clckwrks.ProfileData.Acid (GetUserIdUsernames(..))
 import Data.Monoid (mempty)
 import Data.Maybe  (fromJust)
+import Data.String (fromString)
 import Data.Time (UTCTime, getCurrentTime)
 import Data.Text (Text, pack)
 import qualified Data.Set as Set
@@ -31,15 +32,15 @@ editBug here bid =
        case mBug of
          Nothing ->
              do notFound ()
-                template "Bug not found." ()
+                template (fromString "Bug not found.") ()
                          <h1>BugId Not Found: <% bid %></h1>
          (Just bug) ->
           do users      <- getUsers
              milestones <- query $ GetMilestones
-             template "Edit Bug Report" ()
+             template (fromString "Edit Bug Report") ()
               <%>
                <h1>Edit Bug Report</h1>
-               <% reform (form here) "sbr" updateReport Nothing (editBugForm users milestones bug) %>
+--               <% reform (form here) "sbr" updateReport Nothing (editBugForm users milestones bug) %>
               </%>
     where
       updateReport :: Bug -> BugsM Response

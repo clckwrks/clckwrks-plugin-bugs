@@ -12,6 +12,7 @@ import Clckwrks.ProfileData.Acid
 import Data.Maybe (fromMaybe, maybe)
 import Data.Set   (Set)
 import qualified Data.Set as Set
+import Data.String (fromString)
 import Data.Text  (pack)
 
 import Happstack.Auth (AuthState, ProfileState)
@@ -22,7 +23,7 @@ viewBug bid =
     do mBug <- query (GetBugById bid)
        case mBug of
          Nothing -> do notFound ()
-                       template "bug not found." ()
+                       template (fromString "bug not found.") ()
                         <p>Could not find Bug #<% show $ unBugId bid %></p>
          (Just bug) -> bugHtml bug
 
@@ -34,7 +35,7 @@ bugHtml Bug{..} =
              Nothing  -> return (pack "none")
              Just mid ->
                  fromMaybe (pack $ show mid) <$> query (GetMilestoneTitle mid)
-       template ("Bug #" ++ (show $ unBugId bugId)) ()
+       template (fromString $ "Bug #" ++ (show $ unBugId bugId)) ()
          <%>
            <dl id="view-bug">
             <dt>Bug #:</dt>       <dd><% show $ unBugId bugId %></dd>

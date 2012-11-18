@@ -11,6 +11,7 @@ import Clckwrks.Bugs.Types
 import Clckwrks.Bugs.URL
 import Clckwrks.Bugs.Page.Template (template)
 import Clckwrks.ProfileData.Acid (GetUserIdUsernames(..))
+import Data.String (fromString)
 import Data.Traversable (sequenceA)
 import Data.Monoid (mempty)
 import Data.Maybe  (fromJust, isJust)
@@ -28,10 +29,10 @@ import Text.Reform
 editMilestones :: BugsURL -> BugsM Response
 editMilestones here =
     do milestones <- query GetMilestones
-       template "Edit Milestones" ()
+       template (fromString "Edit Milestones") ()
          <%>
            <h1>Edit Milestones</h1>
-           <% reform (form here) "em" updateMilestones Nothing (editMilestonesForm milestones) %>
+--           <% reform (form here) "em" updateMilestones Nothing (editMilestonesForm milestones) %>
          </%>
     where
       updateMilestones :: ([Milestone], Bool, Bool) -> BugsM Response

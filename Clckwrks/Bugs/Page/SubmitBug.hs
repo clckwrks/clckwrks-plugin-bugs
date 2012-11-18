@@ -9,6 +9,7 @@ import Clckwrks.Bugs.Monad
 import Clckwrks.Bugs.Types
 import Clckwrks.Bugs.URL
 import Clckwrks.Bugs.Page.Template (template)
+import Data.String (fromString)
 import Data.Monoid (mempty)
 import Data.Maybe  (fromJust)
 import Data.Time (UTCTime, getCurrentTime)
@@ -24,7 +25,7 @@ import Text.Reform
 
 submitBug :: BugsURL -> BugsM Response
 submitBug here =
-    do template "Submit a Report" ()
+    do template (fromString "Submit a Report") ()
               <%>
                <h1>Submit Report</h1>
                <% reform (form here) "sbr" addReport Nothing submitForm %>
@@ -50,7 +51,7 @@ submitForm =
         <*> pure Nothing
         <*  (li $ inputSubmit (pack "submit"))
   ) `setAttrs` ["class" := "bugs"]
-    where
+     where
       submittorIdForm :: BugsForm UserId
       submittorIdForm = impure (fromJust <$> getUserId)
 

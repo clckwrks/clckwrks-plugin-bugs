@@ -27,6 +27,7 @@ data BugsConfig = BugsConfig
     { bugsDirectory    :: FilePath -- ^ directory in which to store uploaded attachments
     , bugsState        :: AcidState BugsState
     , bugsClckURL      :: ClckURL -> [(T.Text, Maybe T.Text)] -> T.Text
+{-
     , bugsPageTemplate :: ( EmbedAsChild BugsM headers
                           , EmbedAsChild BugsM body
                           ) =>
@@ -34,7 +35,7 @@ data BugsConfig = BugsConfig
                        -> headers
                        -> body
                        -> XMLGenT BugsM XML
-
+-}
     }
 
 type BugsT m = ClckT BugsURL (ReaderT BugsConfig m)
@@ -88,7 +89,7 @@ withBugsConfig mBasePath bugsDir f =
            f (BugsConfig { bugsDirectory    = bugsDir
                          , bugsState        = bugsState
                          , bugsClckURL      = undefined
-                         , bugsPageTemplate = undefined
+--                         , bugsPageTemplate = undefined
                          })
 
 addBugsAdminMenu :: ClckT BugsURL IO ()
