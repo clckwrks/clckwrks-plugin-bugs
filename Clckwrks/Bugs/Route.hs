@@ -53,4 +53,3 @@ routeBugs unsecureURL =
              editBug url bid
          BugsAdmin EditMilestones ->
              editMilestones url
-
