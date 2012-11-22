@@ -10,6 +10,7 @@ import Clckwrks.Bugs.Monad
 import Clckwrks.Bugs.Route
 import Data.Acid.Local
 import Data.Text           (Text)
+import qualified Data.Text.Lazy as TL
 import Data.Maybe          (fromMaybe)
 import System.FilePath     ((</>))
 import Web.Plugin.Core
@@ -38,15 +39,15 @@ bugsInit plugins =
        let basePath = maybe "_state" (\td -> td </> "_state") mTopDir -- FIXME
        acid <- openLocalStateFrom (basePath </> "bugs") initialBugsState
        addCleanup plugins Always (createCheckpointAndClose acid)
-       let bugsConfig = BugsConfig { bugsDirectory    = "bugs-dir"
-                                   , bugsState        = acid
-                                   , bugsClckURL      = clckShowFn
+       let bugsConfig = BugsConfig { bugsDirectory = "bugs-dir"
+                                   , bugsState     = acid
+                                   , bugsClckURL   = clckShowFn
                                    }
-       addPreProc plugins (pluginName bugsPlugin) (bugsCmd bugsShowFn)
+       addPreProc plugins (bugsCmd bugsShowFn)
        addHandler plugins (pluginName bugsPlugin) (bugsHandler bugsShowFn bugsConfig)
        return Nothing
 
-bugsPlugin :: Plugin BugsURL Theme (ClckT ClckURL (ServerPartT IO) Response) (ClckT ClckURL IO ()) ClckwrksConfig (ClckT ClckURL IO)
+bugsPlugin :: Plugin BugsURL Theme (ClckT ClckURL (ServerPartT IO) Response) (ClckT ClckURL IO ()) ClckwrksConfig [TL.Text -> ClckT ClckURL IO TL.Text]
 bugsPlugin = Plugin
     { pluginName       = "bugs"
     , pluginInit       = bugsInit

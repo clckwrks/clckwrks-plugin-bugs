@@ -52,14 +52,14 @@ parseCmd =
 
 bugsCmd :: (Functor m, Monad m) =>
            (BugsURL -> [(Text, Maybe Text)] -> Text)
-        -> Text
-        -> ClckT url m Text
+        -> TL.Text
+        -> ClckT url m TL.Text
 bugsCmd bugsShowURL txt =
-    case parse (segments "bugs" parseCmd) (TL.fromStrict txt) of
-      (Fail _ _ e) -> return (T.pack e)
+    case parse (segments "bugs" parseCmd) txt of
+      (Fail _ _ e) -> return (TL.pack e)
       (Done _ segments) ->
           do b <- transform (applyCmd bugsShowURL) segments
-             return $ TL.toStrict (B.toLazyText b)
+             return $ B.toLazyText b
 
 applyCmd bugsShowURL (ShowBug bid) =
     do html <- unXMLGenT $ <a href=(bugsShowURL (ViewBug bid) [])>#<% show $ unBugId bid  %></a>
