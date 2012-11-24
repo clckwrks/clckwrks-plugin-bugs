@@ -13,7 +13,7 @@ import Data.Text           (Text)
 import qualified Data.Text.Lazy as TL
 import Data.Maybe          (fromMaybe)
 import System.FilePath     ((</>))
-import Web.Plugin.Core
+import Web.Plugins.Core    (Plugin(..), When(Always), addCleanup, addHandler, getConfig, getPluginRouteFn, initPlugin)
 import Paths_clckwrks_plugin_bugs (getDataDir)
 
 bugsHandler :: (BugsURL -> [(Text, Maybe Text)] -> Text)

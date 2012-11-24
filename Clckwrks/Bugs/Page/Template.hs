@@ -11,7 +11,7 @@ import Control.Monad.State
 import Data.Text (Text)
 import HSP hiding (escape)
 import Happstack.Server.HSP.HTML ()
-import Web.Plugin.Core
+import Web.Plugins.Core (Plugin(..), getPluginRouteFn, getTheme)
 
 template :: ( EmbedAsChild BugsM headers
             , EmbedAsChild BugsM body
