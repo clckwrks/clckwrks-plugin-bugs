@@ -27,15 +27,6 @@ data BugsConfig = BugsConfig
     { bugsDirectory    :: FilePath -- ^ directory in which to store uploaded attachments
     , bugsState        :: AcidState BugsState
     , bugsClckURL      :: ClckURL -> [(T.Text, Maybe T.Text)] -> T.Text
-{-
-    , bugsPageTemplate :: ( EmbedAsChild BugsM headers
-                          , EmbedAsChild BugsM body
-                          ) =>
-                          String
-                       -> headers
-                       -> body
-                       -> XMLGenT BugsM XML
--}
     }
 
 type BugsT m = ClckT BugsURL (ReaderT BugsConfig m)
@@ -79,7 +70,7 @@ instance (Monad m) => MonadReader BugsConfig (BugsT m) where
 instance (Functor m, Monad m) => GetAcidState (BugsT m) BugsState where
     getAcidState =
         bugsState <$> ask
-
+{-
 withBugsConfig :: Maybe FilePath
                -> FilePath
                -> (BugsConfig -> IO a) -> IO a
@@ -91,7 +82,7 @@ withBugsConfig mBasePath bugsDir f =
                          , bugsClckURL      = undefined
 --                         , bugsPageTemplate = undefined
                          })
-
+-}
 addBugsAdminMenu :: ClckT BugsURL IO ()
 addBugsAdminMenu =
     do editMilestonesURL <- showURL (BugsAdmin EditMilestones)
