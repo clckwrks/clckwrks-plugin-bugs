@@ -14,7 +14,6 @@ import qualified Data.Text.Lazy as TL
 import Data.Maybe          (fromMaybe)
 import System.FilePath     ((</>))
 import Web.Plugins.Core    (Plugin(..), When(Always), addCleanup, addHandler, getConfig, getPluginRouteFn, initPlugin)
-import Paths_clckwrks_plugin_bugs (getDataDir)
 
 bugsHandler :: (BugsURL -> [(Text, Maybe Text)] -> Text)
             -> BugsConfig
@@ -53,9 +52,7 @@ bugsPlugin = Plugin
     , pluginInit       = bugsInit
     , pluginDepends    = []
     , pluginToPathInfo = toPathInfo
-    , pluginPostHook   =
-         do dd <- liftIO getDataDir
-            addPluginPath (pluginName bugsPlugin) dd
+    , pluginPostHook   = return ()
     }
 
 plugin :: ClckPlugins -- ^ plugins
