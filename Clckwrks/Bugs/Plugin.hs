@@ -8,12 +8,13 @@ import Clckwrks.Bugs.Acid
 import Clckwrks.Bugs.PreProcess    (bugsCmd)
 import Clckwrks.Bugs.Monad
 import Clckwrks.Bugs.Route
+import Control.Monad.State         (get)
 import Data.Acid.Local
-import Data.Text           (Text)
-import qualified Data.Text.Lazy as TL
-import Data.Maybe          (fromMaybe)
-import System.FilePath     ((</>))
-import Web.Plugins.Core    (Plugin(..), When(Always), addCleanup, addHandler, getConfig, getPluginRouteFn, initPlugin)
+import Data.Text                   (Text)
+import qualified Data.Text.Lazy    as TL
+import Data.Maybe                  (fromMaybe)
+import System.FilePath             ((</>))
+import Web.Plugins.Core            (Plugin(..), When(Always), addCleanup, addHandler, getConfig, getPluginRouteFn, initPlugin)
 
 bugsHandler :: (BugsURL -> [(Text, Maybe Text)] -> Text)
             -> BugsConfig
@@ -46,13 +47,21 @@ bugsInit plugins =
        addHandler plugins (pluginName bugsPlugin) (bugsHandler bugsShowFn bugsConfig)
        return Nothing
 
+addBugsAdminMenu :: ClckT url IO ()
+addBugsAdminMenu =
+    do p <- plugins <$> get
+       (Just showBugsURL) <- getPluginRouteFn p (pluginName bugsPlugin)
+       let editMilestonesURL = showBugsURL (BugsAdmin EditMilestones) []
+       addAdminMenu ("Bugs", [("Edit Milestones", editMilestonesURL)])
+
+
 bugsPlugin :: Plugin BugsURL Theme (ClckT ClckURL (ServerPartT IO) Response) (ClckT ClckURL IO ()) ClckwrksConfig [TL.Text -> ClckT ClckURL IO TL.Text]
 bugsPlugin = Plugin
     { pluginName       = "bugs"
     , pluginInit       = bugsInit
     , pluginDepends    = []
     , pluginToPathInfo = toPathInfo
-    , pluginPostHook   = return ()
+    , pluginPostHook   = addBugsAdminMenu
     }
 
 plugin :: ClckPlugins -- ^ plugins

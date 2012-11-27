@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, MultiParamTypeClasses, RankNTypes, TypeFamilies, TypeSynonymInstances, UndecidableInstances, OverloadedStrings #-}
 module Clckwrks.Bugs.Monad where
 
-import Clckwrks                 (Clck, ClckT(..), ClckFormT, ClckState(..), ClckURL(..), mapClckT, addAdminMenu)
+import Clckwrks                 (Clck, ClckT(..), ClckFormT, ClckState(..), ClckURL(..), mapClckT)
 import Clckwrks.Acid
 import Clckwrks.IOThread        (IOThread(..), startIOThread, killIOThread)
 import Clckwrks.Bugs.Acid
@@ -83,7 +83,3 @@ withBugsConfig mBasePath bugsDir f =
 --                         , bugsPageTemplate = undefined
                          })
 -}
-addBugsAdminMenu :: ClckT BugsURL IO ()
-addBugsAdminMenu =
-    do editMilestonesURL <- showURL (BugsAdmin EditMilestones)
-       addAdminMenu ("Bugs", [("Edit Milestones", editMilestonesURL)])
