@@ -13,9 +13,15 @@ Cabal-version:       >=1.6
 Data-Files:
     data/style.css
 
+source-repository head
+    type:     darcs
+    subdir:   clckwrks-plugin-bugs
+    location: http://hub.darcs.net/stepcut/clckwrks
+
 Library
   Build-tools:
     trhsx
+
   Exposed-modules:
     Clckwrks.Bugs
     Clckwrks.Bugs.Acid
@@ -34,7 +40,7 @@ Library
     Paths_clckwrks_plugin_bugs
 
   Build-depends:
-    base                     < 5,
+    base                    < 5,
     acid-state             >= 0.7,
     attoparsec             == 0.10.*,
     blaze-html             == 0.5.*,
