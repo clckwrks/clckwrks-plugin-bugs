@@ -32,7 +32,7 @@ editMilestones here =
        template (fromString "Edit Milestones") ()
          <%>
            <h1>Edit Milestones</h1>
---           <% reform (form here) "em" updateMilestones Nothing (editMilestonesForm milestones) %>
+           <% reform (form here) "em" updateMilestones Nothing (editMilestonesForm milestones) %>
          </%>
     where
       updateMilestones :: ([Milestone], Bool, Bool) -> BugsM Response

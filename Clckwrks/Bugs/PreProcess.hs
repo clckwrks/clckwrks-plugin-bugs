@@ -9,7 +9,7 @@ import Clckwrks.Bugs.URL                (BugsURL(..))
 import Clckwrks.Bugs.Page.Timeline      (timelineWidget)
 import Clckwrks.Bugs.Types              (BugId(..))
 import Clckwrks.Monad                   (transform, segments)
-import Data.Attoparsec.Text.Lazy        (Parser, Result(..), char, choice, decimal, parse, skipMany, space, stringCI, skipMany)
+import Data.Attoparsec.Text.Lazy        (Parser, Result(..), char, choice, decimal, parse, skipMany, space, asciiCI, skipMany)
 import Data.Monoid                      (mempty)
 import           Data.Text              (Text, pack)
 import qualified Data.Text              as T
@@ -28,7 +28,7 @@ data BugsCmd
 parseAttr :: Text -> Parser ()
 parseAttr name =
     do skipMany space
-       stringCI name
+       asciiCI name
        skipMany space
        char '='
        skipMany space
@@ -47,7 +47,7 @@ bugId showBugsURL =
 parseCmd :: Parser BugsCmd
 parseCmd =
     choice [ parseAttr (pack "id") *> (ShowBug . BugId <$> decimal)
-           , stringCI (pack "timeline") *> pure ShowTimeline
+           , asciiCI (pack "timeline") *> pure ShowTimeline
            ]
 
 bugsCmd :: (Functor m, Monad m) =>
