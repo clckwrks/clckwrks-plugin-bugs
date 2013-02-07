@@ -10,6 +10,7 @@ import Clckwrks.Bugs.Monad
 import Clckwrks.Bugs.Types
 import Clckwrks.Bugs.URL
 import Clckwrks.Bugs.Page.Template (template)
+import Clckwrks.Page.Types (Markup(..), PreProcessor(..))
 import Clckwrks.ProfileData.Acid (GetUserIdUsernames(..))
 import Data.Monoid (mempty)
 import Data.Maybe  (fromJust)

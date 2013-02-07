@@ -2,6 +2,7 @@
 module Clckwrks.Bugs.Plugin where
 
 import Clckwrks
+import Clckwrks.Monad              (ClckPluginsSt)
 import Clckwrks.Plugin
 import Clckwrks.Bugs.URL
 import Clckwrks.Bugs.Acid
@@ -10,6 +11,7 @@ import Clckwrks.Bugs.Monad
 import Clckwrks.Bugs.Route
 import Control.Monad.State         (get)
 import Data.Acid.Local
+import qualified Data.Set          as Set
 import Data.Text                   (Text)
 import qualified Data.Text.Lazy    as TL
 import Data.Maybe                  (fromMaybe)
@@ -52,14 +54,14 @@ addBugsAdminMenu =
     do p <- plugins <$> get
        (Just showBugsURL) <- getPluginRouteFn p (pluginName bugsPlugin)
        let editMilestonesURL = showBugsURL (BugsAdmin EditMilestones) []
-       addAdminMenu ("Bugs", [("Edit Milestones", editMilestonesURL)])
+       addAdminMenu ("Bugs", [(Set.fromList [Administrator, Editor], "Edit Milestones", editMilestonesURL)])
 
 
-bugsPlugin :: Plugin BugsURL Theme (ClckT ClckURL (ServerPartT IO) Response) (ClckT ClckURL IO ()) ClckwrksConfig [TL.Text -> ClckT ClckURL IO TL.Text]
+bugsPlugin :: Plugin BugsURL Theme (ClckT ClckURL (ServerPartT IO) Response) (ClckT ClckURL IO ()) ClckwrksConfig ClckPluginsSt
 bugsPlugin = Plugin
     { pluginName       = "bugs"
     , pluginInit       = bugsInit
-    , pluginDepends    = []
+    , pluginDepends    = ["clck", "page"]
     , pluginToPathInfo = toPathInfo
     , pluginPostHook   = addBugsAdminMenu
     }

@@ -2,6 +2,7 @@
 module Clckwrks.Bugs.Types where
 
 import Clckwrks
+import Clckwrks.Page.Types (Markup(..), PreProcessor(..))
 import Data.Data     (Data, Typeable)
 import Data.IxSet    (Indexable(..), ixSet, ixFun)
 import Data.Maybe    (maybeToList)

@@ -8,6 +8,7 @@ import Clckwrks.Bugs.Monad
 import Clckwrks.Bugs.Types
 import Clckwrks.Bugs.URL
 import Clckwrks.Bugs.Page.Template (template)
+import Clckwrks.Page.Monad         (markupToContent)
 import Clckwrks.ProfileData.Acid
 import Data.Maybe (fromMaybe, maybe)
 import Data.Set   (Set)
@@ -35,6 +36,7 @@ bugHtml Bug{..} =
              Nothing  -> return (pack "none")
              Just mid ->
                  fromMaybe (pack $ show mid) <$> query (GetMilestoneTitle mid)
+       bugBodyMarkup <- markupToContent bugBody
        template (fromString $ "Bug #" ++ (show $ unBugId bugId)) ()
          <%>
            <dl id="view-bug">
@@ -44,7 +46,7 @@ bugHtml Bug{..} =
             <dt>Status:</dt>      <dd><% show bugStatus %></dd>
             <dt>Milestone:</dt>   <dd><% milestoneTxt %></dd>
             <dt>Title:</dt>       <dd><% bugTitle %></dd>
-            <dt>Body:</dt>        <dd><% bugBody %></dd>
+            <dt>Body:</dt>        <dd><% bugBodyMarkup %></dd>
             <% whenHasRole (Set.singleton Administrator) <a href=(BugsAdmin (EditBug bugId))>edit</a> %>
            </dl>
          </%>

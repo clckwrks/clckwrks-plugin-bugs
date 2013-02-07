@@ -18,7 +18,7 @@ import Network.URI                  (unEscapeString)
 import System.FilePath              ((</>), makeRelative, splitDirectories)
 import Paths_clckwrks_plugin_bugs   (getDataDir)
 
-checkAuth : BugsURL
+checkAuth :: BugsURL
           -> BugsM BugsURL
 checkAuth url =
     do showFn <- bugsClckURL <$> ask
