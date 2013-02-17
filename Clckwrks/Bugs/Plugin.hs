@@ -10,6 +10,7 @@ import Clckwrks.Bugs.PreProcess    (bugsCmd)
 import Clckwrks.Bugs.Monad
 import Clckwrks.Bugs.Route
 import Control.Monad.State         (get)
+import Data.Acid                   (AcidState)
 import Data.Acid.Local
 import qualified Data.Set          as Set
 import Data.Text                   (Text)
@@ -32,6 +33,14 @@ bugsHandler showBugsURL bugsConfig plugins paths =
       flattenURL ::   ((url' -> [(Text, Maybe Text)] -> Text) -> (BugsURL -> [(Text, Maybe Text)] -> Text))
       flattenURL _ u p = showBugsURL u p
 
+navBarCallback :: AcidState BugsState
+               -> (BugsURL -> [(Text, Maybe Text)] -> Text)
+               -> ClckT ClckURL IO (String, [NamedLink])
+navBarCallback acidBugsState showBugsURL =
+    do let submitLink    = NamedLink { namedLinkTitle = "Submit Bug", namedLinkURL = showBugsURL SubmitBug [] }
+           timelineLink  = NamedLink { namedLinkTitle = "Timeline", namedLinkURL = showBugsURL Timeline [] }
+       return ("Bugs", [submitLink, timelineLink])
+
 bugsInit :: ClckPlugins
          -> IO (Maybe Text)
 bugsInit plugins =
@@ -46,6 +55,7 @@ bugsInit plugins =
                                    , bugsClckURL   = clckShowFn
                                    }
        addPreProc plugins (bugsCmd bugsShowFn)
+       addNavBarCallback plugins (navBarCallback acid bugsShowFn)
        addHandler plugins (pluginName bugsPlugin) (bugsHandler bugsShowFn bugsConfig)
        return Nothing
 

@@ -28,7 +28,6 @@ submitBug :: BugsURL -> BugsM Response
 submitBug here =
     do template (fromString "Submit a Report") ()
               <%>
-               <h1>Submit Report</h1>
                <% reform (form here) "sbr" addReport Nothing submitForm %>
               </%>
     where
@@ -40,7 +39,7 @@ submitBug here =
 
 submitForm :: BugsForm Bug
 submitForm =
-  (fieldset $ ol $
+  (divHorizontal $ fieldset $
     Bug <$> pure (BugId 0)
         <*> submittorIdForm
         <*> nowForm
@@ -50,9 +49,16 @@ submitForm =
         <*> bugBodyForm
         <*> pure Set.empty
         <*> pure Nothing
-        <*  (li $ inputSubmit (pack "submit"))
-  ) `setAttrs` ["class" := "bugs"]
+        <*  (divFormActions $ inputSubmit' (pack "submit"))
+  )
      where
+      divFormActions   = mapView (\xml -> [<div class="form-actions"><% xml %></div>])
+      divHorizontal    = mapView (\xml -> [<div class="form-horizontal"><% xml %></div>])
+      divControlGroup  = mapView (\xml -> [<div class="control-group"><% xml %></div>])
+      divControls      = mapView (\xml -> [<div class="controls"><% xml %></div>])
+      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn")]
+      label' str       = (label str `setAttrs` [("class":="control-label")])
+
       submittorIdForm :: BugsForm UserId
       submittorIdForm = impure (fromJust <$> getUserId)
 
@@ -61,11 +67,11 @@ submitForm =
 
       bugTitleForm :: BugsForm Text
       bugTitleForm =
-          (li $ label (pack "Summary:")) ++> (inputText mempty `setAttrs` ["size" := "80"])
+          divControlGroup (label' (pack "Summary:") ++> (divControls $ inputText mempty `setAttrs` ["size" := "80", "class" := "input-xxlarge"]))
 
       bugBodyForm :: BugsForm Markup
       bugBodyForm =
-          (li $ label (pack "Details:")) ++> ((\t -> Markup [HsColour, Markdown] t Untrusted) <$> textarea 80 20 mempty)
+          divControlGroup (label' (pack "Details:") ++> (divControls $ (\t -> Markup [HsColour, Markdown] t Untrusted) <$> (textarea 80 20 mempty `setAttrs` [("class" := "input-xxlarge")])))
 
 
 impure :: (Monoid view, Monad m) => m a -> Form m input error view () a

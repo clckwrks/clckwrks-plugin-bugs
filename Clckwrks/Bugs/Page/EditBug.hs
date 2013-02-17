@@ -40,8 +40,7 @@ editBug here bid =
              milestones <- query $ GetMilestones
              template (fromString "Edit Bug Report") ()
               <%>
-               <h1>Edit Bug Report</h1>
---               <% reform (form here) "sbr" updateReport Nothing (editBugForm users milestones bug) %>
+               <% reform (form here) "sbr" updateReport Nothing (editBugForm users milestones bug) %>
               </%>
     where
       updateReport :: Bug -> BugsM Response
@@ -56,7 +55,7 @@ editBug here bid =
 
 editBugForm :: [(Maybe UserId, Text)] -> [Milestone] -> Bug -> BugsForm Bug
 editBugForm users milestones bug@Bug{..} =
-  (fieldset $ ol $
+  (divHorizontal $ fieldset $
     Bug <$> pure bugId
         <*> pure bugSubmittor
         <*> pure bugSubmitted
@@ -66,31 +65,37 @@ editBugForm users milestones bug@Bug{..} =
         <*> bugBodyForm bugBody
         <*> pure Set.empty
         <*> bugMilestoneForm bugMilestone
-        <*  (li $ inputSubmit (pack "update")))
-   `setAttrs` ["class" := "bugs"]
+        <*  (divFormActions $ inputSubmit' (pack "update")))
     where
+      divFormActions   = mapView (\xml -> [<div class="form-actions"><% xml %></div>])
+      divHorizontal    = mapView (\xml -> [<div class="form-horizontal"><% xml %></div>])
+      divControlGroup  = mapView (\xml -> [<div class="control-group"><% xml %></div>])
+      divControls      = mapView (\xml -> [<div class="controls"><% xml %></div>])
+      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn")]
+      label' str       = (label str `setAttrs` [("class":="control-label")])
+
 
       bugStatusForm :: BugStatus -> BugsForm BugStatus
       bugStatusForm oldStatus =
-          (li $ label (pack "Status:")) ++> select [(s, show s) | s <- [minBound .. maxBound]] (== oldStatus)
+          divControlGroup $ label' (pack "Status:") ++> (divControls $ select [(s, show s) | s <- [minBound .. maxBound]] (== oldStatus))
 
       bugAssignedForm :: Maybe UserId -> BugsForm (Maybe UserId)
       bugAssignedForm mUid =
-          (li $ label (pack "Assigned:")) ++>
-            select users (== mUid)
+          divControlGroup $ label' (pack "Assigned:") ++>
+            (divControls $ select users (== mUid))
 
       bugTitleForm :: Text -> BugsForm Text
       bugTitleForm oldTitle =
-          (li $ label (pack "Summary:")) ++> (inputText oldTitle `setAttrs` ["size" := "80"])
+          divControlGroup $ label' (pack "Summary:") ++> (divControls $ inputText oldTitle `setAttrs` ["size" := "80", "class" := "input-xxlarge"])
 
       bugBodyForm :: Markup -> BugsForm Markup
       bugBodyForm oldBody =
-          (li $ label (pack "Details:")) ++> ((\t -> Markup [HsColour, Markdown] t Untrusted) <$> textarea 80 20 (markup oldBody))
+          divControlGroup $ label' (pack "Details:") ++> (divControls $ ((\t -> Markup [HsColour, Markdown] t Untrusted) <$> (textarea 80 20 (markup oldBody)  `setAttrs` [("class" := "input-xxlarge")])))
 
       bugMilestoneForm :: Maybe MilestoneId -> BugsForm (Maybe MilestoneId)
       bugMilestoneForm mMilestone =
-          (li $ label (pack "Milestone:")) ++>
-            select ((Nothing, pack "none") : [(Just $ milestoneId m, milestoneTitle m) | m <- milestones]) (== mMilestone)
+          divControlGroup $ label' (pack "Milestone:") ++>
+            (divControls $ select ((Nothing, pack "none") : [(Just $ milestoneId m, milestoneTitle m) | m <- milestones]) (== mMilestone))
 
 
 impure :: (Monoid view, Monad m) => m a -> Form m input error view () a

@@ -17,7 +17,6 @@ timeline :: BugsM Response
 timeline =
     template (fromString "Timeline") ()
         <%>
-          <h1>Timeline</h1>
           <% timelineWidget %>
         </%>
 

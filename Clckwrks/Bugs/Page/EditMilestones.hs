@@ -31,15 +31,14 @@ editMilestones here =
     do milestones <- query GetMilestones
        template (fromString "Edit Milestones") ()
          <%>
-           <h1>Edit Milestones</h1>
            <% reform (form here) "em" updateMilestones Nothing (editMilestonesForm milestones) %>
          </%>
     where
-      updateMilestones :: ([Milestone], Bool, Bool) -> BugsM Response
-      updateMilestones (_milestones, False, True) =
+      updateMilestones :: ([Milestone], (Bool, Bool)) -> BugsM Response
+      updateMilestones (_milestones, (False, True)) =
           do _mid <- update $ NewMilestone
              seeOtherURL here
-      updateMilestones (milestones, True, False) =
+      updateMilestones (milestones, (True, False)) =
           do update $ SetMilestones milestones
              seeOtherURL Timeline
 
@@ -49,15 +48,23 @@ editMilestones here =
 -- between the GET and POST requests. We need to use a different
 -- pattern where the POST processing does not depend on the
 -- [Milestone] parameter.
-editMilestonesForm :: [Milestone] -> BugsForm ([Milestone], Bool, Bool)
+editMilestonesForm :: [Milestone] -> BugsForm ([Milestone], (Bool, Bool))
 editMilestonesForm milestones =
-  (fieldset $ ol $
-    (,,) <$> (sequenceA $ map editMilestoneForm milestones) <*> (isJust <$> inputSubmit (pack "update")) <*> (isJust <$> inputSubmit (pack "add new milestone"))
-  ) `setAttrs` ["class" := "bugs"]
+  (divHorizontal $ fieldset $
+    (,) <$> (sequenceA $ map editMilestoneForm milestones) <*> (divFormActions $ (,) <$> (isJust <$> inputSubmit' (pack "update")) <*> (isJust <$> inputSubmit' (pack "add new milestone")))
+  )
     where
+      divFormActions   = mapView (\xml -> [<div class="form-actions"><% xml %></div>])
+      divHorizontal    = mapView (\xml -> [<div class="form-horizontal"><% xml %></div>])
+      divControlGroup  = mapView (\xml -> [<div class="control-group"><% xml %></div>])
+      divControls      = mapView (\xml -> [<div class="controls"><% xml %></div>])
+      label' str       = (label str `setAttrs` [("class":="control-label")])
+      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn")]
+
       editMilestoneForm ms@Milestone{..} =
-          li $ label ("#" ++ show (unMilestoneId milestoneId) ++" title:") ++>
-                      ((\newTitle -> ms { milestoneTitle = newTitle }) <$> inputText milestoneTitle)
+          divControlGroup $
+            label' ("#" ++ show (unMilestoneId milestoneId) ++" title:") ++>
+                      (divControls ((\newTitle -> ms { milestoneTitle = newTitle }) <$> inputText milestoneTitle))
 
 impure :: (Monoid view, Monad m) => m a -> Form m input error view () a
 impure ma =
