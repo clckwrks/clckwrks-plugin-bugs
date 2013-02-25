@@ -39,6 +39,7 @@ bugHtml Bug{..} =
        bugBodyMarkup <- markupToContent bugBody
        template (fromString $ "Bug #" ++ (show $ unBugId bugId)) ()
          <%>
+           <h1>View Bug</h1>
            <dl id="view-bug">
             <dt>Bug #:</dt>       <dd><% show $ unBugId bugId %></dd>
             <dt>Submitted By:</dt><dd><% fromMaybe (pack "Anonymous") submittor %></dd>

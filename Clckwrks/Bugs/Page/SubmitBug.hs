@@ -28,6 +28,7 @@ submitBug :: BugsURL -> BugsM Response
 submitBug here =
     do template (fromString "Submit a Report") ()
               <%>
+               <h1>Submit Bug Report</h1>
                <% reform (form here) "sbr" addReport Nothing submitForm %>
               </%>
     where

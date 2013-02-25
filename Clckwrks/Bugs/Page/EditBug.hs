@@ -40,6 +40,7 @@ editBug here bid =
              milestones <- query $ GetMilestones
              template (fromString "Edit Bug Report") ()
               <%>
+               <h1>Edit Bug Report</h1>
                <% reform (form here) "sbr" updateReport Nothing (editBugForm users milestones bug) %>
               </%>
     where
