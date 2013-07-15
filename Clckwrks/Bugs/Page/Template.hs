@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleContexts, OverloadedStrings #-}
-{-# OPTIONS_GHC -F -pgmFtrhsx #-}
+{-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.Page.Template where
 
 import Clckwrks
@@ -9,7 +9,8 @@ import Clckwrks.Plugin
 import Control.Monad.Reader
 import Control.Monad.State
 import Data.Text (Text)
-import HSP hiding (escape)
+import HSP.XML
+import HSP.XMLGenerator
 import Happstack.Server.HSP.HTML ()
 import Web.Plugins.Core (Plugin(..), getPluginRouteFn, getTheme)
 

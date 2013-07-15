@@ -1,5 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -F -pgmFtrhsx #-}
+{-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.Page.Timeline where
 
 import Clckwrks
@@ -11,7 +11,10 @@ import Clckwrks.Bugs.Page.Template (template)
 import qualified Data.IxSet as IxSet
 import Data.List (find)
 import Data.String (fromString)
+import qualified Data.Text.Lazy as Text
 import Numeric (showFFloat)
+import HSP.XML
+import HSP.XMLGenerator
 
 timeline :: BugsM Response
 timeline =
@@ -37,7 +40,7 @@ showMilestone ms (mid, bugs) =
        do completed <- query (MilestoneCompletion mid)
           <%>
            <h2><% milestoneTitle m %></h2>
-           <% maybe (return $ cdata "") meter completed %>
+           <% maybe (return $ cdata $ fromStringLit "") meter completed %>
            <table>
             <thead>
              <tr>
@@ -53,7 +56,7 @@ showMilestone ms (mid, bugs) =
 
 showBugSummary :: Bug -> XMLGenT BugsM XML
 showBugSummary Bug{..} =
-    <tr ["class" := (if (bugStatus == New) || (bugStatus == Accepted) then "bug-summary-open" else "bug-summary-closed")] >
+    <tr [Text.pack "class" := (if (bugStatus == New) || (bugStatus == Accepted) then (Text.pack "bug-summary-open") else (Text.pack "bug-summary-closed"))] >
      <td><a href=(ViewBug bugId)><% bugId %></a></td>
      <td><% bugTitle %></td>
     </tr>
@@ -63,5 +66,5 @@ meter :: (Real a)
       -> XMLGenT BugsM XML
 meter completed =
     <div class="meter">
-      <span style=("width: " ++ (showFFloat (Just 3) ((fromRational (toRational completed)) * 100) "%"))></span>
+      <span style=(Text.pack $ "width: " ++ (showFFloat (Just 3) ((fromRational (toRational completed)) * 100) "%"))></span>
     </div>

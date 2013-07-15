@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleContexts, RecordWildCards #-}
-{-# OPTIONS_GHC -F -pgmFtrhsx #-}
+{-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.Page.ViewBug where
 
 import Clckwrks
@@ -15,6 +15,8 @@ import Data.Set   (Set)
 import qualified Data.Set as Set
 import Data.String (fromString)
 import Data.Text  (pack)
+import HSP.XML
+import HSP.XMLGenerator
 
 import Happstack.Auth (AuthState, ProfileState)
 import Control.Monad.State
@@ -65,5 +67,5 @@ whenHasRole role xml =
              do b <- query (HasRole uid role)
                 if b
                   then xml
-                  else return $ cdata ""
-         _ -> return $ cdata ""
+                  else return $ cdata $ fromStringLit ""
+         _ -> return $ cdata $ fromStringLit ""

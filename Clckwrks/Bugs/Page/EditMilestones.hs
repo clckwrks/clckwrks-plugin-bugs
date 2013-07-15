@@ -1,5 +1,5 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -F -pgmFtrhsx #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards #-}
+{-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.Page.EditMilestones where
 
 import Control.Arrow        (first)
@@ -16,9 +16,11 @@ import Data.Traversable (sequenceA)
 import Data.Monoid (mempty)
 import Data.Maybe  (fromJust, isJust)
 import Data.Time (UTCTime, getCurrentTime)
-import Data.Text (Text, pack)
 import qualified Data.Set as Set
-import HSP
+import Data.Text (Text, pack)
+import qualified Data.Text.Lazy as TL
+import HSP.XML
+import HSP.XMLGenerator
 import Text.Reform ( CommonFormError(..), Form, FormError(..), Proof(..), (++>)
                    , (<++), prove, transformEither, transform, view
                    )
@@ -31,7 +33,7 @@ editMilestones here =
     do milestones <- query GetMilestones
        template (fromString "Edit Milestones") ()
          <%>
-           <% reform (form here) "em" updateMilestones Nothing (editMilestonesForm milestones) %>
+           <% reform (form here) (TL.pack "em") updateMilestones Nothing (editMilestonesForm milestones) %>
          </%>
     where
       updateMilestones :: ([Milestone], (Bool, Bool)) -> BugsM Response
@@ -51,15 +53,19 @@ editMilestones here =
 editMilestonesForm :: [Milestone] -> BugsForm ([Milestone], (Bool, Bool))
 editMilestonesForm milestones =
   (divHorizontal $ fieldset $
-    (,) <$> (sequenceA $ map editMilestoneForm milestones) <*> (divFormActions $ (,) <$> (isJust <$> inputSubmit' (pack "update")) <*> (isJust <$> inputSubmit' (pack "add new milestone")))
+    (,) <$> (sequenceA $ map editMilestoneForm milestones)
+        <*> (    divFormActions $ (,)
+             <$> (isJust <$> inputSubmit' (pack "update"))
+             <*> (isJust <$> inputSubmit' (pack "add new milestone"))
+            )
   )
     where
       divFormActions   = mapView (\xml -> [<div class="form-actions"><% xml %></div>])
       divHorizontal    = mapView (\xml -> [<div class="form-horizontal"><% xml %></div>])
       divControlGroup  = mapView (\xml -> [<div class="control-group"><% xml %></div>])
       divControls      = mapView (\xml -> [<div class="controls"><% xml %></div>])
-      label' str       = (label str `setAttrs` [("class":="control-label")])
-      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn")]
+      label' str       = (label str `setAttrs` [("class":="control-label") :: Attr TL.Text TL.Text])
+      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn") :: Attr TL.Text TL.Text]
 
       editMilestoneForm ms@Milestone{..} =
           divControlGroup $

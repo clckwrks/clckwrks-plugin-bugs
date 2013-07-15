@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS_GHC -F -pgmFtrhsx #-}
+{-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.PreProcess where
 
 import Control.Monad.Trans
@@ -10,15 +10,15 @@ import Clckwrks.Bugs.Page.Timeline      (timelineWidget)
 import Clckwrks.Bugs.Types              (BugId(..))
 import Clckwrks.Monad                   (transform, segments)
 import Data.Attoparsec.Text.Lazy        (Parser, Result(..), char, choice, decimal, parse, skipMany, space, asciiCI, skipMany)
-import Data.Monoid                      (mempty)
+import Data.Monoid                      (mconcat, mempty)
 import           Data.Text              (Text, pack)
 import qualified Data.Text              as T
 import qualified Data.Text.Lazy         as TL
 import           Data.Text.Lazy.Builder (Builder)
 import qualified Data.Text.Lazy.Builder as B
-import HSP
-import HSP.HTML                         (renderAsHTML)
-import HSP.Identity                     (evalIdentity)
+import HSP.HTML4                        (renderAsHTML)
+import HSP.XML
+import HSP.XMLGenerator
 import Web.Routes                       (showURL)
 
 data BugsCmd
@@ -63,7 +63,7 @@ bugsCmd bugsShowURL txt =
 
 applyCmd bugsShowURL (ShowBug bid) =
     do html <- unXMLGenT $ <a href=(bugsShowURL (ViewBug bid) [])>#<% show $ unBugId bid  %></a>
-       return $ B.fromString $ concat $ lines $ renderAsHTML html
+       return $ mconcat $ map B.fromLazyText $ TL.lines $ renderAsHTML html
 {-
 applyCmd bugsShowURL ShowTimeline =
     do html <- unXMLGenT $ timelineWidget

@@ -1,5 +1,5 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -F -pgmFtrhsx #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards #-}
+{-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.Page.SubmitBug where
 
 import Control.Monad.Reader (ask)
@@ -15,8 +15,10 @@ import Data.Monoid (mempty)
 import Data.Maybe  (fromJust)
 import Data.Time (UTCTime, getCurrentTime)
 import Data.Text (Text, pack)
+import qualified Data.Text.Lazy as TL
 import qualified Data.Set as Set
-import HSP
+import HSP.XML
+import HSP.XMLGenerator
 import Text.Reform ( CommonFormError(..), Form, FormError(..), Proof(..), (++>)
                    , (<++), prove, transformEither, transform, view)
 import Text.Reform.Happstack
@@ -29,7 +31,7 @@ submitBug here =
     do template (fromString "Submit a Report") ()
               <%>
                <h1>Submit Bug Report</h1>
-               <% reform (form here) "sbr" addReport Nothing submitForm %>
+               <% reform (form here) (TL.pack "sbr") addReport Nothing submitForm %>
               </%>
     where
       addReport :: Bug -> BugsM Response
@@ -57,8 +59,8 @@ submitForm =
       divHorizontal    = mapView (\xml -> [<div class="form-horizontal"><% xml %></div>])
       divControlGroup  = mapView (\xml -> [<div class="control-group"><% xml %></div>])
       divControls      = mapView (\xml -> [<div class="controls"><% xml %></div>])
-      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn")]
-      label' str       = (label str `setAttrs` [("class":="control-label")])
+      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn") :: Attr TL.Text TL.Text]
+      label' str       = (label str `setAttrs` [("class":="control-label") :: Attr TL.Text TL.Text])
 
       submittorIdForm :: BugsForm UserId
       submittorIdForm = impure (fromJust <$> getUserId)
@@ -68,11 +70,11 @@ submitForm =
 
       bugTitleForm :: BugsForm Text
       bugTitleForm =
-          divControlGroup (label' (pack "Summary:") ++> (divControls $ inputText mempty `setAttrs` ["size" := "80", "class" := "input-xxlarge"]))
+          divControlGroup (label' (pack "Summary:") ++> (divControls $ inputText mempty `setAttrs` ["size" := "80", "class" := "input-xxlarge" :: Attr TL.Text TL.Text]))
 
       bugBodyForm :: BugsForm Markup
       bugBodyForm =
-          divControlGroup (label' (pack "Details:") ++> (divControls $ (\t -> Markup [HsColour, Markdown] t Untrusted) <$> (textarea 80 20 mempty `setAttrs` [("class" := "input-xxlarge")])))
+          divControlGroup (label' (pack "Details:") ++> (divControls $ (\t -> Markup [HsColour, Markdown] t Untrusted) <$> (textarea 80 20 mempty `setAttrs` [("class" := "input-xxlarge"):: Attr TL.Text TL.Text])))
 
 
 impure :: (Monoid view, Monad m) => m a -> Form m input error view () a

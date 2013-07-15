@@ -1,5 +1,5 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -F -pgmFtrhsx #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards #-}
+{-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.Page.EditBug where
 
 import Control.Arrow        (first)
@@ -16,9 +16,12 @@ import Data.Monoid (mempty)
 import Data.Maybe  (fromJust)
 import Data.String (fromString)
 import Data.Time (UTCTime, getCurrentTime)
-import Data.Text (Text, pack)
+import Data.Text (Text)
+import qualified Data.Text      as T
+import qualified Data.Text.Lazy as TL
 import qualified Data.Set as Set
-import HSP
+import HSP.XML
+import HSP.XMLGenerator
 import Text.Reform ( CommonFormError(..), Form, FormError(..), Proof(..), (++>)
                    , (<++), prove, transformEither, transform, view
                    )
@@ -41,7 +44,7 @@ editBug here bid =
              template (fromString "Edit Bug Report") ()
               <%>
                <h1>Edit Bug Report</h1>
-               <% reform (form here) "sbr" updateReport Nothing (editBugForm users milestones bug) %>
+               <% reform (form here) (TL.pack "sbr") updateReport Nothing (editBugForm users milestones bug) %>
               </%>
     where
       updateReport :: Bug -> BugsM Response
@@ -51,7 +54,7 @@ editBug here bid =
 
       getUsers :: BugsM [(Maybe UserId, Text)]
       getUsers =
-          ((Nothing, pack "Unassigned") :) . map (first Just) <$> query GetUserIdUsernames
+          ((Nothing, T.pack "Unassigned") :) . map (first Just) <$> query GetUserIdUsernames
 
 
 editBugForm :: [(Maybe UserId, Text)] -> [Milestone] -> Bug -> BugsForm Bug
@@ -66,37 +69,37 @@ editBugForm users milestones bug@Bug{..} =
         <*> bugBodyForm bugBody
         <*> pure Set.empty
         <*> bugMilestoneForm bugMilestone
-        <*  (divFormActions $ inputSubmit' (pack "update")))
+        <*  (divFormActions $ inputSubmit' (T.pack "update")))
     where
       divFormActions   = mapView (\xml -> [<div class="form-actions"><% xml %></div>])
       divHorizontal    = mapView (\xml -> [<div class="form-horizontal"><% xml %></div>])
       divControlGroup  = mapView (\xml -> [<div class="control-group"><% xml %></div>])
       divControls      = mapView (\xml -> [<div class="controls"><% xml %></div>])
-      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn")]
-      label' str       = (label str `setAttrs` [("class":="control-label")])
+      inputSubmit' str = inputSubmit str `setAttrs` [("class":="btn") :: Attr TL.Text TL.Text]
+      label' str       = (label str `setAttrs` [("class":="control-label") :: Attr TL.Text TL.Text])
 
 
       bugStatusForm :: BugStatus -> BugsForm BugStatus
       bugStatusForm oldStatus =
-          divControlGroup $ label' (pack "Status:") ++> (divControls $ select [(s, show s) | s <- [minBound .. maxBound]] (== oldStatus))
+          divControlGroup $ label' (T.pack "Status:") ++> (divControls $ select [(s, show s) | s <- [minBound .. maxBound]] (== oldStatus))
 
       bugAssignedForm :: Maybe UserId -> BugsForm (Maybe UserId)
       bugAssignedForm mUid =
-          divControlGroup $ label' (pack "Assigned:") ++>
+          divControlGroup $ label' (T.pack "Assigned:") ++>
             (divControls $ select users (== mUid))
 
       bugTitleForm :: Text -> BugsForm Text
       bugTitleForm oldTitle =
-          divControlGroup $ label' (pack "Summary:") ++> (divControls $ inputText oldTitle `setAttrs` ["size" := "80", "class" := "input-xxlarge"])
+          divControlGroup $ label' (T.pack "Summary:") ++> (divControls $ inputText oldTitle `setAttrs` ["size" := "80", "class" := "input-xxlarge" :: Attr TL.Text TL.Text])
 
       bugBodyForm :: Markup -> BugsForm Markup
       bugBodyForm oldBody =
-          divControlGroup $ label' (pack "Details:") ++> (divControls $ ((\t -> Markup [HsColour, Markdown] t Untrusted) <$> (textarea 80 20 (markup oldBody)  `setAttrs` [("class" := "input-xxlarge")])))
+          divControlGroup $ label' (T.pack "Details:") ++> (divControls $ ((\t -> Markup [HsColour, Markdown] t Untrusted) <$> (textarea 80 20 (markup oldBody)  `setAttrs` [("class" := "input-xxlarge") :: Attr TL.Text TL.Text])))
 
       bugMilestoneForm :: Maybe MilestoneId -> BugsForm (Maybe MilestoneId)
       bugMilestoneForm mMilestone =
-          divControlGroup $ label' (pack "Milestone:") ++>
-            (divControls $ select ((Nothing, pack "none") : [(Just $ milestoneId m, milestoneTitle m) | m <- milestones]) (== mMilestone))
+          divControlGroup $ label' (T.pack "Milestone:") ++>
+            (divControls $ select ((Nothing, T.pack "none") : [(Just $ milestoneId m, milestoneTitle m) | m <- milestones]) (== mMilestone))
 
 
 impure :: (Monoid view, Monad m) => m a -> Form m input error view () a

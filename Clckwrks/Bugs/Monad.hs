@@ -15,9 +15,11 @@ import Data.Acid.Local     (createCheckpointAndClose, openLocalStateFrom)
 import qualified Data.Map  as Map
 import Data.Maybe          (fromMaybe)
 import qualified Data.Text as T
+import qualified Data.Text.Lazy as TL
 import Happstack.Server
 import Happstack.Server.Internal.Monads (FilterFun)
-import HSP                  (Attr((:=)), Attribute(MkAttr), EmbedAsAttr(..), EmbedAsChild(..), IsName(toName), XMLGenT, XML, pAttrVal)
+import HSP.XMLGenerator     (Attr((:=)), EmbedAsAttr(..), EmbedAsChild(..), IsName(toName), XMLGenT)
+import HSP.XML              (Attribute(MkAttr), XML, pAttrVal)
 import System.Directory     (createDirectoryIfMissing)
 import System.FilePath      ((</>))
 import Text.Reform          (CommonFormError, FormError(..))
@@ -45,15 +47,15 @@ instance (Functor m, Monad m) => EmbedAsChild (BugsT m) BugsFormError where
 
 type BugsForm = ClckFormT BugsFormError BugsM
 
-instance (IsName n) => EmbedAsAttr BugsM (Attr n BugsURL) where
+instance (IsName n TL.Text) => EmbedAsAttr BugsM (Attr n BugsURL) where
         asAttr (n := u) =
             do url <- showURL u
-               asAttr $ MkAttr (toName n, pAttrVal (T.unpack url))
+               asAttr $ MkAttr (toName n, pAttrVal (TL.fromStrict url))
 
-instance (IsName n) => EmbedAsAttr BugsM (Attr n ClckURL) where
+instance (IsName n TL.Text) => EmbedAsAttr BugsM (Attr n ClckURL) where
         asAttr (n := url) =
             do showFn <- bugsClckURL <$> ask
-               asAttr $ MkAttr (toName n, pAttrVal (T.unpack $ showFn url []))
+               asAttr $ MkAttr (toName n, pAttrVal (TL.fromStrict $ showFn url []))
 
 instance (Functor m, Monad m, EmbedAsChild m String) => EmbedAsChild m BugId where
     asChild (BugId i) = asChild $ '#' : show i
