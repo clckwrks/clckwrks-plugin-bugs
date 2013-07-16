@@ -20,7 +20,7 @@ source-repository head
 
 Library
   Build-tools:
-    trhsx
+    hsx2hs
 
   Exposed-modules:
     Clckwrks.Bugs
