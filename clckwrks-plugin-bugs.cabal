@@ -1,5 +1,5 @@
 Name:                clckwrks-plugin-bugs
-Version:             0.6.0
+Version:             0.6.1
 Synopsis:            bug tracking plugin for clckwrks
 Homepage:            http://clckwrks.com/
 License:             BSD3
@@ -43,7 +43,7 @@ Library
     base                    < 5,
     acid-state             >= 0.9,
     attoparsec             == 0.10.*,
-    clckwrks               >= 0.18 && < 0.19,
+    clckwrks               >= 0.18 && < 0.20,
     clckwrks-plugin-page   == 0.2.*,
     containers             >= 0.4 && < 0.6,
     directory              >= 1.1 && < 1.3,
