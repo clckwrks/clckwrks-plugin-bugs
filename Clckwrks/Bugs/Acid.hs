@@ -6,7 +6,7 @@ import Control.Monad.Reader   (ask)
 import Control.Monad.State    (get, modify, put)
 import Data.Acid              (Query, Update, makeAcidic)
 import Data.Data              (Data, Typeable)
-import Data.IxSet             (IxSet, Proxy(..), (@=), (@+), getOne, empty, toAscList, toList, fromList, updateIx)
+import Data.IxSet             (IxSet, Proxy(..), (@=), (@+), getOne, empty, toAscList, toDescList, toList, fromList, updateIx)
 import qualified Data.IxSet   as IxSet
 import Data.Map               (Map)
 import qualified Data.Map     as Map
@@ -91,7 +91,7 @@ allBugMeta sortOrder =
          (Asc SortByBugId) ->
              return $ map bugMeta (toAscList (Proxy :: Proxy BugId) bugs)
          (Desc SortByBugId) ->
-             return $ map bugMeta (toAscList (Proxy :: Proxy BugId) bugs)
+             return $ map bugMeta (toDescList (Proxy :: Proxy BugId) bugs)
 
 ------------------------------------------------------------------------------
 -- Milestones
