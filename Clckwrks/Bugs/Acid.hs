@@ -5,6 +5,7 @@ import Control.Applicative    ((<$>))
 import Control.Monad.Reader   (ask)
 import Control.Monad.State    (get, modify, put)
 import Data.Acid              (Query, Update, makeAcidic)
+import Data.Data              (Data, Typeable)
 import Data.IxSet             (IxSet, Proxy(..), (@=), (@+), getOne, empty, toAscList, toList, fromList, updateIx)
 import qualified Data.IxSet   as IxSet
 import Data.Map               (Map)
@@ -13,7 +14,7 @@ import Data.Ratio             ((%))
 import Data.SafeCopy          (base, deriveSafeCopy, extension, Migrate(..))
 import           Data.Text    (Text)
 import qualified Data.Text    as Text
-import Clckwrks.Bugs.Types    (Bug(..), BugStatus(..), BugId(..), Milestone(..), MilestoneId(..), TargetDate(..))
+import Clckwrks.Bugs.Types    (Bug(..), BugMeta(..), BugStatus(..), BugId(..), Milestone(..), MilestoneId(..), TargetDate(..))
 
 data BugsState_0 = BugsState_0
     { nextBugId_0       :: BugId
@@ -60,12 +61,37 @@ getBugById bid =
 putBug :: Bug -> Update BugsState ()
 putBug bug =
     do bs@BugsState{..} <- get
-       put $ bs { bugs = updateIx (bugId bug) bug bugs }
+       put $ bs { bugs = updateIx (bugId $ bugMeta bug) bug bugs }
 
 allBugIds :: Query BugsState [BugId]
 allBugIds =
     do BugsState{..} <- ask
-       return $ map bugId (toList bugs)
+       return $ map (bugId . bugMeta) (toList bugs)
+
+data SortBugsBy
+    = SortByBugId
+{-
+    | SortBySubmittor
+    | SortByMilestone
+    | SortByStatus
+-}
+      deriving (Eq, Ord, Read, Show, Data, Typeable)
+$(deriveSafeCopy 0 'base ''SortBugsBy)
+
+data SortOrder a
+    = Asc a
+    | Desc a
+      deriving (Eq, Ord, Read, Show, Data, Typeable)
+$(deriveSafeCopy 0 'base ''SortOrder)
+
+allBugMeta :: SortOrder SortBugsBy -> Query BugsState [BugMeta]
+allBugMeta sortOrder =
+    do BugsState{..} <- ask
+       case sortOrder of
+         (Asc SortByBugId) ->
+             return $ map bugMeta (toAscList (Proxy :: Proxy BugId) bugs)
+         (Desc SortByBugId) ->
+             return $ map bugMeta (toAscList (Proxy :: Proxy BugId) bugs)
 
 ------------------------------------------------------------------------------
 -- Milestones
@@ -131,6 +157,7 @@ $(makeAcidic ''BugsState
    , 'getBugById
    , 'putBug
    , 'allBugIds
+   , 'allBugMeta
    , 'newMilestone
    , 'getMilestones
    , 'getMilestoneTitle

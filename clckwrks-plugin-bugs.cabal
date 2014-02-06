@@ -1,5 +1,5 @@
 Name:                clckwrks-plugin-bugs
-Version:             0.6.7
+Version:             0.7.0
 Synopsis:            bug tracking plugin for clckwrks
 Homepage:            http://clckwrks.com/
 License:             BSD3
@@ -27,6 +27,7 @@ Library
     Clckwrks.Bugs.Acid
     Clckwrks.Bugs.Monad
     Clckwrks.Bugs.Plugin
+    Clckwrks.Bugs.Page.BugList
     Clckwrks.Bugs.Page.EditBug
     Clckwrks.Bugs.Page.EditMilestones
     Clckwrks.Bugs.Page.Template

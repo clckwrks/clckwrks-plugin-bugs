@@ -18,5 +18,6 @@ data BugsURL
     | BugsAdmin BugsAdminURL
     | BugsData FilePath
     | Timeline
+    | BugList
       deriving (Eq, Ord, Read, Show, Data, Typeable)
 $(derivePathInfo ''BugsURL)

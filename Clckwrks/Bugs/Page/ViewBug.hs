@@ -31,8 +31,8 @@ viewBug bid =
          (Just bug) -> bugHtml bug
 
 bugHtml :: Bug -> BugsM Response
-bugHtml Bug{..} =
-    do submittor       <- query (GetUsername bugSubmittor)
+bugHtml (Bug BugMeta{..} bugBody) =
+    do submitter       <- query (GetUsername bugSubmitter)
        milestoneTxt <-
            case bugMilestone of
              Nothing  -> return (pack "none")
@@ -44,7 +44,7 @@ bugHtml Bug{..} =
            <h1>View Bug</h1>
            <dl id="view-bug">
             <dt>Bug #:</dt>       <dd><% show $ unBugId bugId %></dd>
-            <dt>Submitted By:</dt><dd><% fromMaybe (pack "Anonymous") submittor %></dd>
+            <dt>Submitted By:</dt><dd><% fromMaybe (pack "Anonymous") submitter %></dd>
             <dt>Submitted:</dt>   <dd><% bugSubmitted %></dd>
             <dt>Status:</dt>      <dd><% show bugStatus %></dd>
             <dt>Milestone:</dt>   <dd><% milestoneTxt %></dd>

@@ -6,6 +6,7 @@ import Control.Monad.Trans          (liftIO)
 import Clckwrks                     (Role(..), requiresRole_)
 import Clckwrks.Bugs.Monad          (BugsM, BugsConfig(..))
 import Clckwrks.Bugs.URL            (BugsURL(..), BugsAdminURL(..))
+import Clckwrks.Bugs.Page.BugList   (bugList)
 import Clckwrks.Bugs.Page.EditBug   (editBug)
 import Clckwrks.Bugs.Page.EditMilestones (editMilestones)
 import Clckwrks.Bugs.Page.SubmitBug (submitBug)
@@ -30,6 +31,7 @@ checkAuth url =
          BugsAdmin  {} -> requiresRole (Set.singleton Administrator) url
          BugsData   {} -> return url
          Timeline   {} -> return url
+         BugList    {} -> return url
 
 routeBugs :: BugsURL
           -> BugsM Response
@@ -46,6 +48,8 @@ routeBugs unsecureURL =
                   else serveFile (guessContentTypeM mimeTypes) (bugsDir </> "data" </> fp'')
          Timeline ->
              timeline
+         BugList ->
+             bugList
          BugsAdmin (EditBug bid) ->
              editBug url bid
          BugsAdmin EditMilestones ->

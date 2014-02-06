@@ -37,21 +37,22 @@ submitBug here =
       addReport :: Bug -> BugsM Response
       addReport bug =
           do ident <- update GenBugId
-             update $ PutBug (bug { bugId = ident })
+             update $ PutBug (bug { bugMeta = (bugMeta bug) { bugId = ident } })
              seeOtherURL (ViewBug ident)
 
 submitForm :: BugsForm Bug
 submitForm =
   (divHorizontal $ fieldset $
-    Bug <$> pure (BugId 0)
-        <*> submittorIdForm
-        <*> nowForm
-        <*> pure New
-        <*> pure Nothing
-        <*> bugTitleForm
+    Bug <$> (BugMeta <$> pure (BugId 0)
+                     <*> submittorIdForm
+                     <*> nowForm
+                     <*> pure New
+                     <*> pure Nothing
+                     <*> bugTitleForm
+                     <*> pure Set.empty
+                     <*> pure Nothing
+            )
         <*> bugBodyForm
-        <*> pure Set.empty
-        <*> pure Nothing
         <*  (divFormActions $ inputSubmit' (pack "submit"))
   )
      where

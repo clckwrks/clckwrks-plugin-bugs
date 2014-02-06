@@ -55,7 +55,7 @@ showMilestone ms (mid, bugs) =
           </%>
 
 showBugSummary :: Bug -> XMLGenT BugsM XML
-showBugSummary Bug{..} =
+showBugSummary (Bug BugMeta{..} bugBody) =
     <tr [Text.pack "class" := (if (bugStatus == New) || (bugStatus == Accepted) then (Text.pack "bug-summary-open") else (Text.pack "bug-summary-closed"))] >
      <td><a href=(ViewBug bugId)><% bugId %></a></td>
      <td><% bugTitle %></td>

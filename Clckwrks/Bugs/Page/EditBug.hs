@@ -58,17 +58,18 @@ editBug here bid =
 
 
 editBugForm :: [(Maybe UserId, Text)] -> [Milestone] -> Bug -> BugsForm Bug
-editBugForm users milestones bug@Bug{..} =
+editBugForm users milestones bug@(Bug bugMeta@BugMeta{..} bugBody) =
   (divHorizontal $ fieldset $
-    Bug <$> pure bugId
-        <*> pure bugSubmittor
-        <*> pure bugSubmitted
-        <*> bugStatusForm bugStatus
-        <*> bugAssignedForm bugAssigned
-        <*> bugTitleForm bugTitle
+    Bug <$> (BugMeta <$> pure bugId
+                     <*> pure bugSubmitter
+                     <*> pure bugSubmitted
+                     <*> bugStatusForm bugStatus
+                     <*> bugAssignedForm bugAssigned
+                     <*> bugTitleForm bugTitle
+                     <*> pure Set.empty
+                     <*> bugMilestoneForm bugMilestone
+            )
         <*> bugBodyForm bugBody
-        <*> pure Set.empty
-        <*> bugMilestoneForm bugMilestone
         <*  (divFormActions $ inputSubmit' (T.pack "update")))
     where
       divFormActions   = mapView (\xml -> [<div class="form-actions"><% xml %></div>])
