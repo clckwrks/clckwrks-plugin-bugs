@@ -24,6 +24,7 @@ import Web.Routes                       (showURL)
 data BugsCmd
     = ShowBug BugId
     | ShowTimeline
+    | BugListLink
 
 parseAttr :: Text -> Parser ()
 parseAttr name =
@@ -46,8 +47,9 @@ bugId showBugsURL =
 -}
 parseCmd :: Parser BugsCmd
 parseCmd =
-    choice [ parseAttr (pack "id") *> (ShowBug . BugId <$> decimal)
+    choice [ parseAttr (pack "id")     *> (ShowBug . BugId <$> decimal)
            , asciiCI (pack "timeline") *> pure ShowTimeline
+           , asciiCI (pack "list-link")     *> pure BugListLink
            ]
 
 bugsCmd :: (Functor m, Monad m) =>
@@ -63,6 +65,9 @@ bugsCmd bugsShowURL txt =
 
 applyCmd bugsShowURL (ShowBug bid) =
     do html <- unXMLGenT $ <a href=(bugsShowURL (ViewBug bid) [])>#<% show $ unBugId bid  %></a>
+       return $ mconcat $ map B.fromLazyText $ TL.lines $ renderAsHTML html
+applyCmd bugsShowURL BugListLink =
+    do html <- unXMLGenT $ <a href=(bugsShowURL BugList [])>Bug List</a>
        return $ mconcat $ map B.fromLazyText $ TL.lines $ renderAsHTML html
 {-
 applyCmd bugsShowURL ShowTimeline =

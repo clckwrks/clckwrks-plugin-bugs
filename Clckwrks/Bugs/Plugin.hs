@@ -38,8 +38,9 @@ navBarCallback :: AcidState BugsState
                -> ClckT ClckURL IO (String, [NamedLink])
 navBarCallback acidBugsState showBugsURL =
     do let submitLink    = NamedLink { namedLinkTitle = "Submit Bug", namedLinkURL = showBugsURL SubmitBug [] }
-           timelineLink  = NamedLink { namedLinkTitle = "Timeline", namedLinkURL = showBugsURL Timeline [] }
-       return ("Bugs", [submitLink, timelineLink])
+           timelineLink  = NamedLink { namedLinkTitle = "Timeline",   namedLinkURL = showBugsURL Timeline  [] }
+           bugListLink   = NamedLink { namedLinkTitle = "Bug List",   namedLinkURL = showBugsURL BugList   [] }
+       return ("Bugs", [submitLink, timelineLink, bugListLink])
 
 bugsInit :: ClckPlugins
          -> IO (Maybe Text)
