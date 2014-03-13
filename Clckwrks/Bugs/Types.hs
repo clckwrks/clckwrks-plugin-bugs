@@ -6,20 +6,38 @@ import Clckwrks.Page.Types (Markup(..), PreProcessor(..))
 import Data.Data           (Data, Typeable)
 import Data.IxSet          (Indexable(..), ixSet, ixFun)
 import Data.Maybe          (maybeToList)
-import Data.SafeCopy       (SafeCopy, Migrate(..), base, deriveSafeCopy, extension)
+import Data.SafeCopy       (SafeCopy(..), Migrate(..), base, contain, deriveSafeCopy, extension, safeGet, safePut)
+import qualified Data.Serialize as S
 import Data.Text           (Text)
+import qualified Data.Text.Encoding as T
 import Data.Time           (UTCTime)
 import Data.Set            (Set)
 import Web.Routes          (PathInfo(..))
 
 newtype BugId = BugId { unBugId :: Integer }
-    deriving (Eq, Ord, Read, Show, Data, Typeable, SafeCopy, PathInfo)
+    deriving (Eq, Ord, Read, Show, Data, Typeable, PathInfo)
+
+instance SafeCopy BugId where
+    getCopy = contain $ fmap BugId S.get
+    putCopy = contain . S.put . unBugId
+    errorTypeName _ = "BugId"
 
 newtype BugTag = BugTag { tagText :: Text }
-    deriving (Eq, Ord, Read, Show, Data, Typeable, SafeCopy, PathInfo)
+    deriving (Eq, Ord, Read, Show, Data, Typeable, PathInfo)
+
+instance SafeCopy BugTag where
+    kind = base
+    getCopy = contain $ (BugTag . T.decodeUtf8) <$> safeGet
+    putCopy = contain . safePut . T.encodeUtf8 . tagText
+    errorTypeName _ = "BugTag"
 
 newtype MilestoneId = MilestoneId { unMilestoneId :: Integer }
-    deriving (Eq, Ord, Read, Show, Data, Typeable, SafeCopy, PathInfo, Enum)
+    deriving (Eq, Ord, Read, Show, Data, Typeable, PathInfo, Enum)
+
+instance SafeCopy MilestoneId where
+    getCopy = contain $ fmap MilestoneId S.get
+    putCopy = contain . S.put . unMilestoneId
+    errorTypeName _ = "MilestoneId"
 
 data Milestone = Milestone
     { milestoneId      :: MilestoneId
