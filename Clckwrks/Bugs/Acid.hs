@@ -28,7 +28,7 @@ data BugsState = BugsState
     , bugs            :: IxSet Bug
     , nextMilestoneId :: MilestoneId
     , milestones      :: IxSet Milestone
-    }
+    } deriving (Data, Typeable)
 $(deriveSafeCopy 1 'extension ''BugsState)
 
 instance Migrate BugsState where
