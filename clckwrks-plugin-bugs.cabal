@@ -1,5 +1,5 @@
 Name:                clckwrks-plugin-bugs
-Version:             0.7.3
+Version:             0.7.4
 Synopsis:            bug tracking plugin for clckwrks
 Homepage:            http://clckwrks.com/
 License:             BSD3
@@ -43,7 +43,7 @@ Library
   Build-depends:
     base                    < 5,
     acid-state             >= 0.12 && < 0.13,
-    attoparsec             >= 0.10 && < 0.12,
+    attoparsec             >= 0.10 && < 0.13,
     clckwrks               >= 0.21 && < 0.23,
     clckwrks-plugin-page   == 0.3.*,
     cereal                 >= 0.4 && < 0.5,
@@ -56,7 +56,7 @@ Library
     hsp                    >= 0.9 && < 0.11,
     ixset                  == 1.0.*,
     mtl                    >= 2.0 && < 2.3,
-    network                >= 2.3 && < 2.5,
+    network                >= 2.3 && < 2.6,
     reform                 == 0.2.*,
     reform-happstack       == 0.2.*,
     reform-hsp             >= 0.2 && < 0.3,
