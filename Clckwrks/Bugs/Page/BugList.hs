@@ -52,10 +52,8 @@ showBugMeta BugMeta{..} =
      <td><% show bugStatus %></td>
      <td><% case bugAssigned of
               Nothing -> <% () %>
-              (Just u) -> do mpd <- query (GetProfileData u)
-                             case mpd of
-                               Nothing -> <% () %>
-                               (Just pd) -> <% username pd %>
+              (Just u) -> do pd <- query (GetProfileData u)
+                             <% username pd %>
           %>
      </td>
     </tr>
