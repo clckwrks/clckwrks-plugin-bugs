@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts, OverloadedStrings, TypeFamilies #-}
 {-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.PreProcess where
 

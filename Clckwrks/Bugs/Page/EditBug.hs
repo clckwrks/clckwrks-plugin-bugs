@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, RecordWildCards #-}
+{-# LANGUAGE FlexibleContexts, OverloadedStrings, RecordWildCards, TypeFamilies #-}
 {-# OPTIONS_GHC -F -pgmFhsx2hs #-}
 module Clckwrks.Bugs.Page.EditBug where
 
