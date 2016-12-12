@@ -52,7 +52,7 @@ Library
 
   Build-depends:
     base                    < 5,
-    acid-state             >= 0.12 && < 0.14,
+    acid-state             >= 0.12 && < 0.15,
     attoparsec             >= 0.10 && < 0.14,
     clckwrks               >= 0.21 && < 0.25,
     clckwrks-plugin-page   >= 0.3  && < 0.5,
