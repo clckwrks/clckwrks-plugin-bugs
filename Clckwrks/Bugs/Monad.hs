@@ -18,7 +18,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import Happstack.Server
 import Happstack.Server.Internal.Monads (FilterFun)
-import HSP.XMLGenerator     (Attr((:=)), EmbedAsAttr(..), EmbedAsChild(..), IsName(toName), XMLGenT)
+import HSP.XMLGenerator     (Attr((:=)), EmbedAsAttr(..), EmbedAsChild(..), IsName(toName), XMLGen, XMLGenT)
 import HSP.XML              (Attribute(MkAttr), XML, pAttrVal)
 import System.Directory     (createDirectoryIfMissing)
 import System.FilePath      ((</>))
@@ -57,7 +57,7 @@ instance (IsName n TL.Text) => EmbedAsAttr BugsM (Attr n ClckURL) where
             do showFn <- bugsClckURL <$> ask
                asAttr $ MkAttr (toName n, pAttrVal (TL.fromStrict $ showFn url []))
 
-instance (Functor m, Monad m, EmbedAsChild m String) => EmbedAsChild m BugId where
+instance (XMLGen m, Functor m, Monad m, EmbedAsChild m String) => EmbedAsChild m BugId where
     asChild (BugId i) = asChild $ '#' : show i
 
 runBugsT :: BugsConfig -> BugsT m a -> ClckT BugsURL m a
