@@ -23,7 +23,7 @@ template :: ( EmbedAsChild BugsM headers
          -> BugsM Response
 template ttl hdrs bdy =
     do p <- plugins <$> get
-       (Just clckShowFn) <- getPluginRouteFn p (pluginName clckPlugin)
+       ~(Just clckShowFn) <- getPluginRouteFn p (pluginName clckPlugin)
        hdrXml <- fmap (map unClckChild) $ unXMLGenT $ asChild <%> <link rel="stylesheet" type="text/css" href=(BugsData "style.css") /> <% hdrs %></%>
        bdyXml <- fmap (map unClckChild) $ unXMLGenT $ asChild bdy
        fmap toResponse $ mapClckT f $ ClckT $ withRouteT (\f -> clckShowFn) $ unClckT $ (themeTemplate p (ThemeStyleId 0) ttl hdrXml bdyXml)
